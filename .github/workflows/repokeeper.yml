@@ -1,27 +1,60 @@
 name: RepoKeeper Implementation Agent
 
 on:
-  issues:
-    types: [labeled]
   issue_comment:
     types: [created]
+  issues:
+    types: [labeled]
+  pull_request_target:
+    types: [labeled]
 
 jobs:
-  implement:
-    runs-on: [self-hosted, repokeeper]
+  agent:
+    runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'issues' && github.event.label.name == 'agent-todo') ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/repokeeper go'))
+      (
+        github.event_name == 'issue_comment' &&
+        contains(github.event.comment.body, '/repokeeper go') &&
+        (
+          github.event.comment.author_association == 'OWNER' ||
+          github.event.comment.author_association == 'MEMBER' ||
+          github.event.comment.author_association == 'COLLABORATOR'
+        )
+      ) ||
+      (
+        github.event_name == 'issues' &&
+        github.event.label.name == 'agent-todo'
+      ) ||
+      (
+        github.event_name == 'pull_request_target' &&
+        github.event.label.name == 'agent-fix'
+      )
     permissions:
       contents: write
       issues: write
       pull-requests: write
-
     steps:
-      - name: Run RepoKeeper Agent
-        uses: shenxianpeng/repokeeper/agent@v1.4.0
+      - name: Determine context
+        id: ctx
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            echo "issue=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.issue.pull_request }}" != "" ]; then
+            echo "issue=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+            echo "pr=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "issue=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+            echo "pr=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: shenxianpeng/repokeeper@v1
         with:
+          module: agent
           repo: ${{ github.repository }}
-          issue: ${{ github.event.issue.number }}
+          issue: ${{ steps.ctx.outputs.issue }}
+          pr: ${{ steps.ctx.outputs.pr }}
           llm_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
-          llm_base_url: 'https://api.deepseek.com'
+          llm_base_url: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com' }}
+          github_token: ${{ secrets.REPOKEEPER_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
