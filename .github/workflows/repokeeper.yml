@@ -1,4 +1,4 @@
-name: RepoKeeper Implementation Agent
+name: RepoKeeper Agent
 
 on:
   issue_comment:
