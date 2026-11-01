@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Run RepoKeeper Agent
-        uses: shenxianpeng/repokeeper/agent@v1
+        uses: shenxianpeng/repokeeper/agent@v1.4.0
         with:
           repo: ${{ github.repository }}
           issue: ${{ github.event.issue.number }}
