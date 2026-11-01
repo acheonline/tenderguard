@@ -59,6 +59,7 @@ jobs:
 
       - name: Run RepoKeeper Agent
         run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           repokeeper agent \
             --repo "${{ github.repository }}" \
             --issue "${{ steps.ctx.outputs.issue }}" \
