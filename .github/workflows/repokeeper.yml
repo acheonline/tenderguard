@@ -49,7 +49,7 @@ jobs:
             echo "pr=" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: shenxianpeng/repokeeper@v1
+      - uses: shenxianpeng/repokeeper/agent@v1
         with:
           module: agent
           repo: ${{ github.repository }}
