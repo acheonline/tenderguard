@@ -12,7 +12,6 @@ jobs:
     if: |
       (github.event_name == 'issues' && github.event.label.name == 'agent-todo') ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/repokeeper go'))
-
     permissions:
       contents: write
       issues: write
@@ -20,9 +19,9 @@ jobs:
 
     steps:
       - name: Run RepoKeeper Agent
-        uses: shenxianpeng/repokeeper@v1
+        uses: shenxianpeng/repokeeper/agent@v1
         with:
-          module: agent
           repo: ${{ github.repository }}
+          issue: ${{ github.event.issue.number }}
           llm_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
           llm_base_url: 'https://api.deepseek.com'
