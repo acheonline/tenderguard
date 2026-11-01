@@ -23,5 +23,6 @@ jobs:
         uses: shenxianpeng/repokeeper@v1
         with:
           module: agent
+          repo: ${{ github.repository }}
           llm_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
           llm_base_url: 'https://api.deepseek.com'
