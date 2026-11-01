@@ -59,7 +59,7 @@ jobs:
 
       - name: Run RepoKeeper Agent
         run: |
-          python3.10 -m repokeeper agent \
+          repokeeper agent \
             --repo "${{ github.repository }}" \
             --issue "${{ steps.ctx.outputs.issue }}" \
             ${{ steps.ctx.outputs.pr != '' && format('--pr {0}', steps.ctx.outputs.pr) || '' }}
