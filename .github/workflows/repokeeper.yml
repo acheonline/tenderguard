@@ -57,9 +57,11 @@ jobs:
           python3.10 -m pip install --upgrade pip
           python3.10 -m pip install repokeeper
 
+      - name: Add pip user bin to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Run RepoKeeper Agent
         run: |
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           repokeeper agent \
             --repo "${{ github.repository }}" \
             --issue "${{ steps.ctx.outputs.issue }}" \
